@@ -78,9 +78,10 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(view: WebView, req: WebResourceRequest, err: WebResourceError) {}
             override fun shouldOverrideUrlLoading(view: WebView, req: WebResourceRequest): Boolean {
-                val url = req.url.toString()
                 if (req.url.host == "cloud1.5855993.ru") return false
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(req.url.toString())))
+                val savedUrl = getPrefs().getString(KEY_URL, "")
+                if (!savedUrl.isNullOrBlank()) view.loadUrl(savedUrl)
                 return true
             }
         }
