@@ -116,12 +116,13 @@ class MainActivity : AppCompatActivity() {
                     conn.errorStream?.bufferedReader()?.readText() ?: "{}"
                 val json = JSONObject(body)
                 if (json.optBoolean("ok") && json.has("url")) {
-                    val url = json.getString("url")
+                    val tokenUrl = json.getString("url")
+                    val baseUrl = tokenUrl.substringBefore("?")
                     getPrefs().edit()
                         .putString(KEY_PHONE, phone)
-                        .putString(KEY_URL, url)
+                        .putString(KEY_URL, baseUrl)
                         .apply()
-                    runOnUiThread { showWebView(url); requestPinShortcut() }
+                    runOnUiThread { showWebView(tokenUrl); requestPinShortcut() }
                 } else {
                     val err = json.optString("error", "Номер не найден в системе")
                     runOnUiThread { showError(err) }
