@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#0f172a">
 
-    <!-- Экран настройки (первый запуск) -->
+    <!-- Экран первого запуска -->
     <LinearLayout
         android:id="@+id/setupLayout"
         android:layout_width="match_parent"
@@ -25,34 +25,51 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Введите ваш номер квартиры"
+            android:text="Введите ваш номер телефона"
             android:textSize="15sp"
             android:textColor="#94a3b8"
             android:layout_marginBottom="32dp"/>
 
         <EditText
-            android:id="@+id/etAptId"
+            android:id="@+id/etPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Номер квартиры"
+            android:hint="+7 (___) ___-__-__"
             android:textColorHint="#475569"
             android:textColor="#f1f5f9"
             android:textSize="20sp"
-            android:inputType="number"
+            android:inputType="phone"
             android:imeOptions="actionGo"
             android:gravity="center"
             android:background="#1e293b"
             android:padding="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#f87171"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnGo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Открыть домофон"
+            android:text="Войти"
             android:textSize="16sp"
             android:backgroundTint="#2563eb"
-            android:padding="14dp"/>
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
