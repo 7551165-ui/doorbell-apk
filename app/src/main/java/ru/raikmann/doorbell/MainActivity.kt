@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
+import android.net.Uri
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -76,6 +77,12 @@ class MainActivity : AppCompatActivity() {
         webView.webChromeClient = WebChromeClient()
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(view: WebView, req: WebResourceRequest, err: WebResourceError) {}
+            override fun shouldOverrideUrlLoading(view: WebView, req: WebResourceRequest): Boolean {
+                val url = req.url.toString()
+                if (req.url.host == "cloud1.5855993.ru") return false
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                return true
+            }
         }
     }
 
