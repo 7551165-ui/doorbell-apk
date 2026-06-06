@@ -2,6 +2,11 @@ package ru.raikmann.doorbell
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -116,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                         .putString(KEY_PHONE, phone)
                         .putString(KEY_URL, url)
                         .apply()
-                    runOnUiThread { showWebView(url) }
+                    runOnUiThread { showWebView(url); requestPinShortcut() }
                 } else {
                     val err = json.optString("error", "Номер не найден в системе")
                     runOnUiThread { showError(err) }
@@ -132,6 +137,20 @@ class MainActivity : AppCompatActivity() {
         tvError.text = msg
         tvError.visibility = View.VISIBLE
         findViewById<Button>(R.id.btnGo).isEnabled = true
+    }
+
+    private fun requestPinShortcut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val sm = getSystemService(ShortcutManager::class.java)
+            if (sm.isRequestPinShortcutSupported) {
+                val info = ShortcutInfo.Builder(this, "doorbell_main")
+                    .setShortLabel("Домофон")
+                    .setIcon(Icon.createWithResource(this, android.R.drawable.ic_menu_call))
+                    .setIntent(Intent(this, MainActivity::class.java).setAction(Intent.ACTION_MAIN))
+                    .build()
+                sm.requestPinShortcut(info, null)
+            }
+        }
     }
 
     private fun hideKeyboard() {
