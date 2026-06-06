@@ -1,5 +1,6 @@
 package ru.raikmann.doorbell
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
@@ -141,8 +142,21 @@ class MainActivity : AppCompatActivity() {
     private fun getPrefs() = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && webView.visibility == View.VISIBLE && webView.canGoBack()) {
-            webView.goBack()
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.visibility == View.VISIBLE) {
+            if (webView.canGoBack()) {
+                webView.goBack()
+            } else {
+                AlertDialog.Builder(this)
+                    .setTitle("Домофон")
+                    .setMessage("Изменить номер телефона?")
+                    .setPositiveButton("Изменить") { _, _ ->
+                        getPrefs().edit().remove(KEY_URL).remove(KEY_PHONE).apply()
+                        etPhone.text.clear()
+                        showSetup()
+                    }
+                    .setNegativeButton("Отмена", null)
+                    .show()
+            }
             return true
         }
         return super.onKeyDown(keyCode, event)
