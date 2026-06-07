@@ -59,17 +59,24 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermission()
         registerFcmToken()
 
+        val doorUrl  = intent?.getStringExtra("door_url")
         val savedUrl = getPrefs().getString(KEY_URL, "")
-        if (!savedUrl.isNullOrBlank()) {
-            showWebView(savedUrl)
-        } else {
-            showSetup()
+        when {
+            !doorUrl.isNullOrBlank()  -> showWebView(doorUrl)
+            !savedUrl.isNullOrBlank() -> showWebView(savedUrl)
+            else                      -> showSetup()
         }
 
         findViewById<Button>(R.id.btnGo).setOnClickListener { confirmSetup() }
         etPhone.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO) { confirmSetup(); true } else false
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val doorUrl = intent?.getStringExtra("door_url")
+        if (!doorUrl.isNullOrBlank()) showWebView(doorUrl)
     }
 
     override fun onResume() {

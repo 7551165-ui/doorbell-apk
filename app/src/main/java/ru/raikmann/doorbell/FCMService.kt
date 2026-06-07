@@ -38,9 +38,10 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
         val title = msg.data["title"] ?: msg.notification?.title ?: "Домофон"
         val body  = msg.data["body"]  ?: msg.notification?.body  ?: "Звонок в дверь"
+        val url   = msg.data["url"] ?: ""
         stopRinging()
         playDoorbellSound(MAX_REPEATS)
-        showNotification(title, body)
+        showNotification(title, body, url)
     }
 
     private fun playDoorbellSound(repeat: Int) {
@@ -64,11 +65,12 @@ class FCMService : FirebaseMessagingService() {
         } catch (e: Exception) { activePlayer = null }
     }
 
-    private fun showNotification(title: String, body: String) {
+    private fun showNotification(title: String, body: String, url: String = "") {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         ensureChannel(nm)
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            if (url.isNotBlank()) putExtra("door_url", url)
         }
         val pi = PendingIntent.getActivity(this, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
