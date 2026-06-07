@@ -21,6 +21,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.webkit.JavascriptInterface
 import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
@@ -85,12 +86,13 @@ class MainActivity : AppCompatActivity() {
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             cacheMode = WebSettings.LOAD_DEFAULT
         }
+        webView.addJavascriptInterface(AndroidBridge(), "Android")
         webView.webChromeClient = WebChromeClient()
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(view: WebView, req: WebResourceRequest, err: WebResourceError) {}
             override fun shouldOverrideUrlLoading(view: WebView, req: WebResourceRequest): Boolean {
                 if (req.url.host == "cloud1.5855993.ru") return false
-                moveTaskToBack(true)
+                finishAndRemoveTask()
                 return true
             }
         }
@@ -108,6 +110,10 @@ class MainActivity : AppCompatActivity() {
         setupLayout.visibility = View.GONE
         webView.visibility = View.VISIBLE
         webView.loadUrl(url)
+        if (!getPrefs().getBoolean("shortcut_offered", false)) {
+            requestPinShortcut()
+            getPrefs().edit().putBoolean("shortcut_offered", true).apply()
+        }
     }
 
     private fun confirmSetup() {
@@ -139,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                         .putString(KEY_PHONE, phone)
                         .putString(KEY_URL, baseUrl)
                         .apply()
-                    runOnUiThread { showWebView(tokenUrl); requestPinShortcut() }
+                    runOnUiThread { showWebView(tokenUrl) }
                 } else {
                     val err = json.optString("error", "Номер не найден в системе")
                     runOnUiThread { showError(err) }
@@ -155,6 +161,13 @@ class MainActivity : AppCompatActivity() {
         tvError.text = msg
         tvError.visibility = View.VISIBLE
         findViewById<Button>(R.id.btnGo).isEnabled = true
+    }
+
+    inner class AndroidBridge {
+        @JavascriptInterface
+        fun createShortcut() {
+            runOnUiThread { requestPinShortcut() }
+        }
     }
 
     private fun requestPinShortcut() {
