@@ -183,11 +183,8 @@ class MainActivity : AppCompatActivity() {
     private fun registerFcmToken() {
         val phone = getPrefs().getString(KEY_PHONE, "") ?: ""
         if (phone.isBlank()) return
-        // Удаляем старый токен и получаем свежий
-        FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener {
-            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-                registerToken(phone, token)
-            }
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+            registerToken(phone, token)
         }
     }
 
