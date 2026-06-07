@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -23,7 +25,25 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
         val title = msg.data["title"] ?: msg.notification?.title ?: "Домофон"
         val body  = msg.data["body"]  ?: msg.notification?.body  ?: "Звонок в дверь"
+        playDoorbellSound()
         showNotification(title, body)
+    }
+
+    private fun playDoorbellSound() {
+        try {
+            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val mp = MediaPlayer()
+            mp.setAudioAttributes(AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build())
+            val uri = Uri.parse("android.resource://$packageName/${R.raw.doorbell}")
+            mp.setDataSource(applicationContext, uri)
+            mp.setVolume(1f, 1f)
+            mp.prepare()
+            mp.start()
+            mp.setOnCompletionListener { it.release() }
+        } catch (e: Exception) { /* игнорируем */ }
     }
 
     private fun showNotification(title: String, body: String) {
