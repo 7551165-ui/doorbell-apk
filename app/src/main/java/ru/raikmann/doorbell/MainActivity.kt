@@ -80,8 +80,6 @@ class MainActivity : AppCompatActivity() {
             override fun shouldOverrideUrlLoading(view: WebView, req: WebResourceRequest): Boolean {
                 if (req.url.host == "cloud1.5855993.ru") return false
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(req.url.toString())))
-                val savedUrl = getPrefs().getString(KEY_URL, "")
-                if (!savedUrl.isNullOrBlank()) view.loadUrl(savedUrl)
                 return true
             }
         }
