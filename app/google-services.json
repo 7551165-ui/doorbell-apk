@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "198325954558",
+    "project_id": "raikmann-doorbell",
+    "storage_bucket": "raikmann-doorbell.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198325954558:android:b3b89cbbcdefcc7a4182af",
+        "android_client_info": {
+          "package_name": "ru.raikmann.doorbell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6r7F_uGvEmvGxLKywn1Slg8S63RHLsls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

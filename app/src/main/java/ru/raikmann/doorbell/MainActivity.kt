@@ -22,6 +22,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.webkit.JavascriptInterface
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
@@ -51,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         tvError      = findViewById(R.id.tvError)
 
         setupWebView()
+        requestNotificationPermission()
+        registerFcmToken()
 
         val savedUrl = getPrefs().getString(KEY_URL, "")
         if (!savedUrl.isNullOrBlank()) {
@@ -161,6 +168,24 @@ class MainActivity : AppCompatActivity() {
         tvError.text = msg
         tvError.visibility = View.VISIBLE
         findViewById<Button>(R.id.btnGo).isEnabled = true
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            }
+        }
+    }
+
+    private fun registerFcmToken() {
+        val phone = getPrefs().getString(KEY_PHONE, "") ?: ""
+        if (phone.isBlank()) return
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+            registerToken(phone, token)
+        }
     }
 
     inner class AndroidBridge {
