@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-const val CHANNEL_ID = "doorbell_ring"
+const val CHANNEL_ID = "doorbell_ring2"
 
 class FCMService : FirebaseMessagingService() {
 
@@ -51,11 +51,12 @@ class FCMService : FirebaseMessagingService() {
         if (nm.getNotificationChannel(CHANNEL_ID) != null) return
         val sound = Uri.parse("android.resource://$packageName/${R.raw.doorbell}")
         val attrs = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+            .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
         val ch = NotificationChannel(CHANNEL_ID, "Звонок домофона",
             NotificationManager.IMPORTANCE_HIGH).apply {
+            lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
             setSound(sound, attrs)
             enableVibration(true)
             vibrationPattern = longArrayOf(0, 300, 200, 300)
