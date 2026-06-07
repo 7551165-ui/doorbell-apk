@@ -72,6 +72,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        FCMService.stopRinging()
+    }
+
     override fun onPause() {
         super.onPause()
         CookieManager.getInstance().flush()

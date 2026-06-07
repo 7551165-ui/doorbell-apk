@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.core.app.NotificationCompat
@@ -15,7 +14,21 @@ import com.google.firebase.messaging.RemoteMessage
 
 const val CHANNEL_ID = "doorbell_ring3"
 
+// Максимум 30 секунд звона (каждый ДИН-ДОН ~2.35 сек → ~13 повторов)
+private const val MAX_REPEATS = 13
+
 class FCMService : FirebaseMessagingService() {
+
+    companion object {
+        @Volatile private var activePlayer: MediaPlayer? = null
+
+        fun stopRinging() {
+            activePlayer?.let {
+                try { if (it.isPlaying) it.stop(); it.release() } catch (_: Exception) {}
+            }
+            activePlayer = null
+        }
+    }
 
     override fun onNewToken(token: String) {
         val phone = getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_PHONE, "") ?: ""
@@ -25,14 +38,16 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
         val title = msg.data["title"] ?: msg.notification?.title ?: "Домофон"
         val body  = msg.data["body"]  ?: msg.notification?.body  ?: "Звонок в дверь"
-        playDoorbellSound()
+        stopRinging()
+        playDoorbellSound(MAX_REPEATS)
         showNotification(title, body)
     }
 
-    private fun playDoorbellSound(repeat: Int = 3) {
-        if (repeat <= 0) return
+    private fun playDoorbellSound(repeat: Int) {
+        if (repeat <= 0) { activePlayer = null; return }
         try {
             val mp = MediaPlayer()
+            activePlayer = mp
             mp.setAudioAttributes(AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -44,9 +59,9 @@ class FCMService : FirebaseMessagingService() {
             mp.start()
             mp.setOnCompletionListener {
                 it.release()
-                playDoorbellSound(repeat - 1)
+                if (activePlayer == mp) playDoorbellSound(repeat - 1)
             }
-        } catch (e: Exception) { /* игнорируем */ }
+        } catch (e: Exception) { activePlayer = null }
     }
 
     private fun showNotification(title: String, body: String) {
@@ -57,14 +72,12 @@ class FCMService : FirebaseMessagingService() {
         }
         val pi = PendingIntent.getActivity(this, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val sound = Uri.parse("android.resource://$packageName/${R.raw.doorbell}")
         val notif = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(body)
             .setContentIntent(pi)
             .setAutoCancel(true)
-            .setSound(sound)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
         nm.notify(1, notif)
