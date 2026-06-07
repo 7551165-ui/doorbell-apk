@@ -14,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
+import android.webkit.CookieManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -63,7 +64,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        CookieManager.getInstance().flush()
+    }
+
     private fun setupWebView() {
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
