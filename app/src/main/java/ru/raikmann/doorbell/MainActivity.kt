@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             override fun onReceivedError(view: WebView, req: WebResourceRequest, err: WebResourceError) {}
             override fun shouldOverrideUrlLoading(view: WebView, req: WebResourceRequest): Boolean {
                 if (req.url.host == "cloud1.5855993.ru") return false
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(req.url.toString())))
+                moveTaskToBack(true)
                 return true
             }
         }
