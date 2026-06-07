@@ -152,6 +152,7 @@ class MainActivity : AppCompatActivity() {
                         .putString(KEY_PHONE, phone)
                         .putString(KEY_URL, baseUrl)
                         .apply()
+                    registerFcmToken()
                     runOnUiThread { showWebView(tokenUrl) }
                 } else {
                     val err = json.optString("error", "Номер не найден в системе")
