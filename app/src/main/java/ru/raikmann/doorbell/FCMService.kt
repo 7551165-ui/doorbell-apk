@@ -29,9 +29,9 @@ class FCMService : FirebaseMessagingService() {
         showNotification(title, body)
     }
 
-    private fun playDoorbellSound() {
+    private fun playDoorbellSound(repeat: Int = 3) {
+        if (repeat <= 0) return
         try {
-            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
             val mp = MediaPlayer()
             mp.setAudioAttributes(AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
@@ -42,7 +42,10 @@ class FCMService : FirebaseMessagingService() {
             mp.setVolume(1f, 1f)
             mp.prepare()
             mp.start()
-            mp.setOnCompletionListener { it.release() }
+            mp.setOnCompletionListener {
+                it.release()
+                playDoorbellSound(repeat - 1)
+            }
         } catch (e: Exception) { /* игнорируем */ }
     }
 
