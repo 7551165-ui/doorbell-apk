@@ -79,8 +79,10 @@ class FCMService : FirebaseMessagingService() {
             .setContentTitle(title)
             .setContentText(body)
             .setContentIntent(pi)
+            .setFullScreenIntent(pi, true)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
         nm.notify(1, notif)
     }
