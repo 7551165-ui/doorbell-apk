@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         setupWebView()
         requestNotificationPermission()
+        requestFullScreenIntentPermission()
         registerFcmToken()
 
         val doorUrl  = intent?.getStringExtra("door_url")
@@ -181,6 +182,19 @@ class MainActivity : AppCompatActivity() {
         tvError.text = msg
         tvError.visibility = View.VISIBLE
         findViewById<Button>(R.id.btnGo).isEnabled = true
+    }
+
+    private fun requestFullScreenIntentPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            if (!nm.canUseFullScreenIntent()) {
+                try {
+                    val intent = Intent(android.provider.Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                        Uri.parse("package:$packageName"))
+                    startActivity(intent)
+                } catch (_: Exception) {}
+            }
+        }
     }
 
     private fun requestNotificationPermission() {
