@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         progressBar  = findViewById(R.id.progressBar)
         tvError      = findViewById(R.id.tvError)
 
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
         setupWebView()
         requestNotificationPermission()
         requestFullScreenIntentPermission()

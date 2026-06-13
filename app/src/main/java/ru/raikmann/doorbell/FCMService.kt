@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-const val CHANNEL_ID = "doorbell_ring3"
+const val CHANNEL_ID = "doorbell_ring4"
 
 // Максимум 30 секунд звона (каждый ДИН-ДОН ~2.35 сек → ~13 повторов)
 private const val MAX_REPEATS = 13
